@@ -16,5 +16,4 @@ public class VerticesDto {
         this.longitude = v.getLongitude();
         this.weight = v.getWeight();
     }
-
 }

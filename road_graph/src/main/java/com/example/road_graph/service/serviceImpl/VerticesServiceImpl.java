@@ -20,12 +20,7 @@ public class VerticesServiceImpl implements VerticesService {
     VerticesRepository verticesRepository;
 
     @Override
-    public Vertices findById(Long id) {
-        return verticesRepository.findById(id).orElseThrow(() -> new ResourceNotFoundException("Вершины с данным id: " + id + " не найдена!"));
-    }
-
-    @Override
-    public List<Vertices> findAll() {
+    public List<Vertices> getAll() {
         return verticesRepository.findAll();
     }
 
@@ -44,6 +39,4 @@ public class VerticesServiceImpl implements VerticesService {
         vertices.setLongitude(verticesDto.getLongitude());
         vertices.setWeight(verticesDto.getWeight());
     }
-
-
 }

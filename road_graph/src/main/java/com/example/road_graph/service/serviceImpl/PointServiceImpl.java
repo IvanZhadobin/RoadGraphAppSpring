@@ -14,21 +14,13 @@ import java.util.List;
 @AllArgsConstructor
 public class PointServiceImpl implements PointService {
     PointRepository pointRepository;
-
-    @Override
-    public Point findById(Long id) {
-        return pointRepository.findById(id).orElseThrow(() -> new ResourceNotFoundException("Точка с данным id: " + id + " не найдена!"));
-    }
-
     @Override
     public List<Point> findPointsInRectangle(double latMin, double lonMin, double latMax, double lonMax) {
         return pointRepository.findPointsInRectangle(latMin, latMax, lonMin, lonMax);
     }
 
     @Override
-    public List<Point> findAll() {
+    public List<Point> getAll() {
         return pointRepository.findAll();
     }
-
-
 }

@@ -2,8 +2,10 @@ package com.example.road_graph.controllers;
 
 import com.example.road_graph.entities.Edge;
 import com.example.road_graph.entities.Vertices;
+import com.example.road_graph.entities.Point;
 import com.example.road_graph.service.EdgeService;
 import com.example.road_graph.service.GraphService;
+import com.example.road_graph.service.PointService;
 import com.example.road_graph.service.VerticesService;
 import com.example.road_graph.service.serviceImpl.EdgeServiceImpl;
 import com.example.road_graph.service.serviceImpl.GraphServiceImpl;
@@ -28,51 +30,43 @@ public class GraphController {
     private final GraphService graphService;
     private final VerticesService verticesService;
     private final EdgeService edgeService;
+    private final PointService pointService;
 
     @Autowired
-    public GraphController(GraphServiceImpl graphService, VerticesService verticesService, EdgeServiceImpl edgeService) {
+    public GraphController(GraphServiceImpl graphService, VerticesService verticesService, EdgeServiceImpl edgeService, PointService pointService) {
         this.graphService = graphService;
         this.verticesService = verticesService;
         this.edgeService = edgeService;
+        this.pointService = pointService;
     }
 
     @GetMapping("/buildGraph")
     public String buildGraph() {
-        // Шаг 1: Вызов метода detectRoadSegmentsFromDatabase
         graphService.detectRoadSegmentsFromDatabase();
         return "Graph built successfully";
     }
 
-    @GetMapping("/draw")
+    @GetMapping("/drawGraph")
     public ResponseEntity<byte[]> drawGraph() throws IOException {
-        // Шаг 2: Получение всех вершин из таблицы vertices
-        List<Vertices> vertices = verticesService.findAll();
+        List<Point> points = pointService.getAll();
+        List<Vertices> vertices = verticesService.getAll();
+        List<Edge> edges = edgeService.getAll();
 
-
-        // Задание размера изображения и масштабирования координат
         int width = 800;
         int height = 600;
         BufferedImage image = new BufferedImage(width, height, BufferedImage.TYPE_INT_ARGB);
         Graphics2D g = image.createGraphics();
         g.setColor(Color.WHITE);
         g.fillRect(0, 0, width, height);
-        g.setColor(Color.BLUE);
 
-        // Шаг 3: Преобразование координат в пиксели и отрисовка вершин
-        double latMin = vertices.stream().mapToDouble(Vertices::getLatitude).min().orElse(0);
-        double latMax = vertices.stream().mapToDouble(Vertices::getLatitude).max().orElse(0);
-        double lonMin = vertices.stream().mapToDouble(Vertices::getLongitude).min().orElse(0);
-        double lonMax = vertices.stream().mapToDouble(Vertices::getLongitude).max().orElse(0);
 
-        for (Vertices vertex : vertices) {
-            int x = (int) ((vertex.getLongitude() - lonMin) / (lonMax - lonMin) * width);
-            int y = (int) ((vertex.getLatitude() - latMin) / (latMax - latMin) * height);
-            g.fillOval(x, y, 1, 2);
-        }
-
-        // Шаг 4: Получение всех ребер из таблицы edges и отрисовка линий
-        List<Edge> edges = edgeService.findAll();
-        g.setColor(Color.RED);
+        double latMin = points.stream().mapToDouble(Point::getLatitude).min().orElse(0);
+        double latMax = points.stream().mapToDouble(Point::getLatitude).max().orElse(0);
+        double lonMin = points.stream().mapToDouble(Point::getLongitude).min().orElse(0);
+        double lonMax = points.stream().mapToDouble(Point::getLongitude).max().orElse(0);
+        g.setColor(Color.BLACK);
+        g.setStroke(new BasicStroke(1));
+        // Отрисовка обработанного графа
         for (Edge edge : edges) {
             Vertices startVertex = edge.getStartVertex();
             Vertices endVertex = edge.getFinishVertex();
@@ -85,7 +79,6 @@ public class GraphController {
             g.drawLine(startX, startY, endX, endY);
         }
 
-        // Завершение работы с изображением и возврат его в виде массива байтов
         g.dispose();
         ByteArrayOutputStream baos = new ByteArrayOutputStream();
         ImageIO.write(image, "png", baos);
@@ -95,8 +88,6 @@ public class GraphController {
         headers.setContentType(MediaType.IMAGE_PNG);
         headers.setContentLength(imageBytes.length);
 
-        return ResponseEntity.ok()
-                .headers(headers)
-                .body(imageBytes);
+        return ResponseEntity.ok().headers(headers).body(imageBytes);
     }
 }

@@ -6,8 +6,7 @@ import com.example.road_graph.entities.Vertices;
 import java.util.List;
 
 public interface VerticesService {
-    Vertices findById(Long id);
-    List<Vertices> findAll();
+     List<Vertices> getAll();
 
     Vertices add(VerticesDto vertices);
 

@@ -5,10 +5,7 @@ import com.example.road_graph.entities.Edge;
 
 import java.util.List;
 
-public interface EdgeService { // метод для сбора точек
-    Edge findById(Long id);
-    List<Edge> findAll();
+public interface EdgeService {
+    List<Edge> getAll();
     Edge add(EdgeDto edgeDto);
-
-
 }

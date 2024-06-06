@@ -31,7 +31,7 @@ public class GraphServiceImpl implements GraphService {
         List<Vertices> allVertices = new ArrayList<>();
 
 
-        List<Point> allPoints = pointService.findAll();
+        List<Point> allPoints = pointService.getAll();
 
         double latMin = allPoints.stream().mapToDouble(Point::getLatitude).min().orElse(Double.NaN);
         double latMax = allPoints.stream().mapToDouble(Point::getLatitude).max().orElse(Double.NaN);
@@ -170,7 +170,7 @@ public class GraphServiceImpl implements GraphService {
     private List<Vertices> findRoadSegments(int[][] accumulatorSpace, List<Point> points, Map<Pair<Integer, Integer>, List<Integer>> coordinatesMap) {
         List<Vertices> verticesList = new ArrayList<>();
         int threshold = 0;
-        Vertices previousEndVertex = null;  // добавим переменную для хранения предыдущей конечной вершины
+        Vertices previousEndVertex = null;
 
         for (int theta = 0; theta < 180; theta++) {
             for (int rhoIndex = 0; rhoIndex < accumulatorSpace[0].length; rhoIndex++) {

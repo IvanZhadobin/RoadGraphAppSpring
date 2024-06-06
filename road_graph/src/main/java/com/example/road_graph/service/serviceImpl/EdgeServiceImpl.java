@@ -19,12 +19,7 @@ public class EdgeServiceImpl implements EdgeService {
     EdgeRepository edgeRepository;
 
     @Override
-    public Edge findById(Long id) {
-        return edgeRepository.findById(id).orElseThrow(() -> new ResourceNotFoundException(" Грань с данным id: " + id + " не найдена!"));
-    }
-
-    @Override
-    public List<Edge> findAll() {
+    public List<Edge> getAll() {
         return edgeRepository.findAll();
     }
 
@@ -34,13 +29,11 @@ public class EdgeServiceImpl implements EdgeService {
         Edge edge = new Edge();
 
         initEdgeFromDto(edge, edgeDto);
-
         return edgeRepository.save(edge);
     }
+
     private void initEdgeFromDto(Edge edge, EdgeDto edgeDto) {
         edge.setStartVertex(edgeDto.getStartVertex());
         edge.setFinishVertex(edgeDto.getFinishVertex());
     }
-
-
 }

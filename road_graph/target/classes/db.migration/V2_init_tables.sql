@@ -28,27 +28,37 @@ CREATE TABLE edges
 );
 
 
+ALTER TABLE vertices
+    ALTER COLUMN weight TYPE INT USING weight::INTEGER;
+
+
+--очистка таблиц
+DELETE
+FROM points;
+
+
+
 DELETE
 FROM edges;
 DELETE
 FROM vertices;
 
 
-
-DELETE
-FROM points
-where latitude =0;
-
-ALTER TABLE vertices
-    ALTER COLUMN weight TYPE INT USING weight::INTEGER;
-
-
+--Удаление координат за пределами Воронежской области
 DELETE FROM Points
-WHERE latitude NOT BETWEEN 49.0 AND 52.0
-   OR longitude NOT BETWEEN 37.0 AND 41.0;
+WHERE latitude < 49.976765 OR latitude > 53.163891
+   OR longitude < 36.551792 OR longitude > 41.242798;
 
-CREATE SEQUENCE edges_seq START WITH 1 INCREMENT BY 1;
+
+
+--Удаление координат за пределами города воронеж.
+DELETE FROM Points
+WHERE latitude < 51.643908 OR latitude > 51.723510
+   OR longitude < 39.049917 OR longitude > 39.316335;
 
 ALTER SEQUENCE vertices_seq RESTART WITH 1;
 ALTER SEQUENCE edges_seq RESTART WITH 1;
 
+
+--копирование из csv файла
+\COPY points (vehicle_number, date_time, latitude, longitude, speed, azimuth, run) FROM 'D:/gps.csv' DELIMITER ';' CSV HEADER;
